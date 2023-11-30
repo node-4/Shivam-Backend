@@ -13,7 +13,7 @@ exports.userMobileRegister = async (phoneNumber) => {
 			throw new ValidationError('user with phone number already exists');
 		}
 		const user = new User({ phone_number: phoneNumber, });
-		const otp = await generateOTP(6);
+		const otp = await generateOTP(4);
 		user.otp = { magnitude: otp, type: 'registration' }
 		await user.save();
 		await wallet.create({
@@ -40,7 +40,7 @@ exports.userRegister = async (phoneNumber, name, password, location, vechicle) =
 			location: location,
 			vechicle: vechicle
 		});
-		const otp = await generateOTP(6);
+		const otp = await generateOTP(4);
 		user.otp = {
 			magnitude: otp,
 			type: 'registration'
@@ -270,7 +270,7 @@ exports.sendOtp = async (payload) => {
 		console.log("hwllo")
 		const result = await User.findOne({ phone_number: payload.phoneNumber })
 		if (result) {
-			const otp = await generateOTP(6);
+			const otp = await generateOTP(4);
 			result.otp = { magnitude: otp, type: 'registration' }
 			await result.save();
 			// let otpData = await otp.findOne({ phone_number: payload.phoneNumber });

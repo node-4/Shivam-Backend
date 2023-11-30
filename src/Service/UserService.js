@@ -6,6 +6,25 @@ const { sendSms } = require('../Helpers/Sms.js');
 const { ValidationError } = require('../Errors');
 const emailHelper = require('../Helpers/Email');
 
+exports.userMobileRegister = async (phoneNumber) => {
+	try {
+		const userExist = await User.findOne({ phone_number: phoneNumber });
+		if (userExist) {
+			throw new ValidationError('user with phone number already exists');
+		}
+		const user = new User({ phone_number: phoneNumber, });
+		const otp = await generateOTP(6);
+		user.otp = { magnitude: otp, type: 'registration' }
+		await user.save();
+		await wallet.create({
+			user: user._id,
+			user_type: "user"
+		})
+		return user
+	} catch (error) {
+		throw error;
+	}
+}
 exports.userRegister = async (phoneNumber, name, password, location, vechicle) => {
 
 	try {
@@ -78,6 +97,22 @@ exports.registrationOtpVerification = async (phoneNumber, otp) => {
 			signupProcessCompleted: user.signup_process_complete,
 			deliveryprefrencesCompleted: user.delivery_prefrences_completed
 		};
+	} catch (error) {
+		throw error;
+	}
+}
+
+exports.userCompleteRegistration = async (phoneNumber, name, location, email) => {
+	try {
+		const userExist = await User.findOne({ phone_number: phoneNumber });
+		if (userExist) {
+			let result = await User.findOneAndUpdate({ _id: userExist._id }, { $set: { name: name, location: location, email: email, signup_process_complete: true } }, { new: true })
+			if (result) {
+				return result
+			}
+		} else {
+			throw new ValidationError('user with phone number doest not exists');
+		}
 	} catch (error) {
 		throw error;
 	}

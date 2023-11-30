@@ -3,7 +3,22 @@ const User = require('../Models/User');
 const { sendSms } = require("../Helpers/Sms.js");
 const { generateOTP, verifyOTP } = require("../Helpers/Otp.js");
 
-
+exports.userMobileRegister = async (req, res, next) => {
+	try {
+		let Data = await UserService.userMobileRegister(req.body.phoneNumber);
+		return res.status(201).json({ msg: `otp sent to ${req.body.phoneNumber}`, data: Data.otp.magnitude })
+	} catch (error) {
+		next(error);
+	}
+}
+exports.userCompleteRegistration = async (req, res, next) => {
+	try {
+		let Data = await UserService.userCompleteRegistration(req.body.phoneNumber, req.body.name, req.body.location, req.body.email);
+		return res.status(201).json({ msg: `otp sent to ${req.body.phoneNumber}`, data: Data })
+	} catch (error) {
+		next(error);
+	}
+}
 exports.userRegister = async (req, res, next) => {
 	try {
 		let Data = await UserService.userRegister(req.body.phoneNumber, req.body.name, req.body.password, req.body.location, req.body.vechicle);

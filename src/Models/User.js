@@ -41,7 +41,7 @@ const userSchema = new Schema({
     },
     location: {
         type: String
-    }, 
+    },
     vechicle: {
         type: String,
     },
@@ -56,7 +56,10 @@ const userSchema = new Schema({
     order: {
         type: String
     },
-
+    signup_process_complete: {
+        type: Boolean,
+        default: false
+    },
     otp: {
         type: OtpSchema,
         select: false,

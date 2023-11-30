@@ -64,19 +64,14 @@ exports.userRegister = async (phoneNumber, name, password, location, vechicle) =
 }
 exports.registrationOtpVerification = async (phoneNumber, otp) => {
 
-	// console.log("phoneNumber",phoneNumber,"otp",otp)
 	try {
 		const user = await User.findOne({
 			phone_number: phoneNumber,
 			"otp.magnitude": otp
 		}).select("+otp");
-
-		console.log("user", user.otp)
-
 		if (!user) {
 			throw new ValidationError('invalid otp');
 		}
-
 		const isValidOtp = await verifyOTP({
 			created: user.otp.created,
 			magnitude: user.otp.magnitude,
@@ -84,14 +79,10 @@ exports.registrationOtpVerification = async (phoneNumber, otp) => {
 			reqOTPType: 'registration',
 			userOTP: otp
 		})
-		// console.log("isValidOtp",isValidOtp)
-
 		if (!isValidOtp) {
 			throw new ValidationError('invalid otp');
 		}
-
 		const token = await generateToken(user, 'login');
-
 		return {
 			loginToken: token,
 			signupProcessCompleted: user.signup_process_complete,
@@ -279,23 +270,27 @@ exports.sendOtp = async (payload) => {
 		console.log("hwllo")
 		const result = await User.findOne({ phone_number: payload.phoneNumber })
 		if (result) {
-			const code = Math.floor(100000 + Math.random() * 900000);
-			let otpData = await otp.findOne({ phone_number: payload.phoneNumber });
-			if (!otpData) {
-				otpData = new otp();
-			}
-			console.log("otpData", otpData)
-			otpData.phone_number = payload.phoneNumber;
-			otpData.code = code;
-			otpData.expiresIn = new Date().getTime() + 300 * 1000;
-			await otpData.save();
-			await sendSms(result.phone_number, `Otp is: ${code}`, payload.phoneNumber)
+			const otp = await generateOTP(6);
+			result.otp = { magnitude: otp, type: 'registration' }
+			await result.save();
+			// let otpData = await otp.findOne({ phone_number: payload.phoneNumber });
+			// if (!otpData) {
+			// 	otpData = new otp();
+			// }
+			// console.log("otpData", otpData)
+			// otpData.phone_number = payload.phoneNumber;
+			// otpData.code = code;
+			// otpData.expiresIn = new Date().getTime() + 300 * 1000;
+			// await otpData.save();
+			// await otpData.save();
+
+			await sendSms(result.phone_number, `Otp is: ${otp}`, payload.phoneNumber)
 			return {
 				success: true,
 				status: 200,
 				message: 'Otp send SuccesFully Your Phone number',
 				data: result,
-				otp: code
+				otp: otp
 			}
 
 		} else {

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const servicesSchema = new mongoose.Schema({
+const servicesSchema =  mongoose.Schema({
 	category: {
 		type: Schema.Types.ObjectId,
 		ref: "category"

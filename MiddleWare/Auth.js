@@ -1,7 +1,10 @@
 const jwt = require('jsonwebtoken');
 const tokenHelper = require('../Helpers/Token');
-const { User, admin, seller } = require("../Models");
-const { AuthError } = require('../Errors')
+const User  = require("../Models/User");
+const admin = require("../Models/Admin");
+const seller  = require("../Models/Seller");
+const Errors = require('../Errors')
+// const { AuthError } = require('../Errors')
 
 exports.requireSignin = async (req, res, next) => {
     try {
@@ -9,12 +12,12 @@ exports.requireSignin = async (req, res, next) => {
         const decodedToken = await getDecodedToken(req.get('Authorization'));
          console.log(decodedToken)
         if (decodedToken.scope !== 'login') {
-            throw new AuthError('invalid auth token provided');
+            throw Errors.AuthError('invalid auth token provided');
         }
         const user = await getUser(decodedToken.id);
         // console.log(user);
         if (!user) {
-            throw new AuthError('invalid auth token provided');
+            throw Errors.AuthError('invalid auth token provided');
         }
         // console.log(`user name ${user.name}`)
         req.user = user;
@@ -30,11 +33,11 @@ exports.adminMiddleware = async (req, res, next) => {
         const decodedToken = await getDecodedToken(req.get('Authorization'));
         // console.log("getDecodedToken",decodedToken.scope)
         if (decodedToken.scope !== 'login') {
-            throw new AuthError('invalid auth token provided');
+            throw Errors.AuthError('invalid auth token provided');
         }
         const user = await getAdmin(decodedToken.id);
         if (!user) {
-            throw new AuthError('invalid auth token provided');
+            throw Errors.AuthError('invalid auth token provided');
         }
         // console.log(`user name ${user.name}`)
         req.user = user;
@@ -50,11 +53,11 @@ exports.sellerSignin = async (req, res, next) => {
         const decodedToken = await getDecodedToken(req.get('Authorization'));
         // console.log("getDecodedToken",decodedToken.scope)
         if (decodedToken.scope !== 'login') {
-            throw new AuthError('invalid auth token provided');
+            throw Errors.AuthError('invalid auth token provided');
         }
         const user = await getSeller(decodedToken.id);
         if (!user) {
-            throw new AuthError('invalid auth token provided');
+            throw Errors.AuthError('invalid auth token provided');
         }
         // console.log(`user name ${user.name}`)
         req.user = user;
@@ -82,11 +85,11 @@ const getDecodedToken = async (authHeader) => {
         // console.log('entered get decoded token utility....');
         // console.log('authHeader',authHeader)
         if (!authHeader) {
-            throw new AuthError('token not provided or user not logged in')
+            throw Errors.AuthError('token not provided or user not logged in')
         }
         const authHeaderStringSplit = authHeader.split(' ');
         if (!authHeaderStringSplit[0] || authHeaderStringSplit[0].toLowerCase() !== 'bearer' || !authHeaderStringSplit[1]) {
-            throw new AuthError('token not provided or user not logged in');
+            throw  Errors.AuthError('token not provided or user not logged in');
         }
 
         const token = authHeaderStringSplit[1];

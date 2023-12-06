@@ -1,6 +1,6 @@
-const { model, Schema } = require('mongoose');
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const AdminSchema = new Schema({
+const AdminSchema = mongoose.Schema({
 	name: {
 		type: String,
 		required: true
@@ -16,4 +16,4 @@ const AdminSchema = new Schema({
 }, {
 	timestamps: true
 })
-module.exports = model('admin', AdminSchema)
+module.exports = mongoose.model('admin', AdminSchema)

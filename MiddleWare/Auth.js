@@ -1,135 +1,96 @@
-const jwt = require('jsonwebtoken');
-const tokenHelper = require('../Helpers/Token');
-const User  = require("../Models/User");
-const admin = require("../Models/Admin");
-const seller  = require("../Models/Seller");
-const Errors = require('../Errors')
-// const { AuthError } = require('../Errors')
+const jwt = require("jsonwebtoken");
+const User = require("../Models/User");
+const admin = require("../Models/User"); // Assuming there's a separate model for admin
+const seller = require("../Models/User"); // Assuming there's a separate model for seller
+const requireSignin = (req, res, next) => {
+    const token =
+        req.get("Authorization")?.split("Bearer ")[1] ||
+        req.headers["x-access-token"];
 
-exports.requireSignin = async (req, res, next) => {
-    try {
-        // console.log('user auth')
-        const decodedToken = await getDecodedToken(req.get('Authorization'));
-         console.log(decodedToken)
-        if (decodedToken.scope !== 'login') {
-            throw Errors.AuthError('invalid auth token provided');
+    if (!token) {
+        return res.status(403).send({
+            message: "no token provided! Access prohibited",
+        });
+    }
+
+    jwt.verify(token, process.env.SECRETK, async (err, decoded) => {
+        if (err) {
+            console.log(err);
+            return res.status(401).send({
+                message: "UnAuthorised !",
+            });
         }
-        const user = await getUser(decodedToken.id);
+        // console.log(decoded);
+        const user = await User.findOne({ _id: decoded.id });
+        const user1 = await User.findOne({ _id: decoded.id });
+        if (!user && !user1) {
+            return res.status(400).send({
+                message: "The user that this token belongs to does not exist",
+            });
+        }
+        req.user = user || user1;
         // console.log(user);
-        if (!user) {
-            throw Errors.AuthError('invalid auth token provided');
-        }
-        // console.log(`user name ${user.name}`)
-        req.user = user;
         next();
-    } catch (error) {
-        handleAuthErrors(next, error);
-    }
-}
+    });
+};
+const adminMiddleware = (req, res, next) => {
+    const token =
+        req.headers["x-access-token"] ||
+        req.get("Authorization")?.split("Bearer ")[1];
 
-exports.adminMiddleware = async (req, res, next) => {
-    try {
-        console.log('admin auth')
-        const decodedToken = await getDecodedToken(req.get('Authorization'));
-        // console.log("getDecodedToken",decodedToken.scope)
-        if (decodedToken.scope !== 'login') {
-            throw Errors.AuthError('invalid auth token provided');
+    if (!token) {
+        return res.status(403).send({
+            message: "no token provided! Access prohibited",
+        });
+    }
+
+    jwt.verify(token, process.env.SECRETK, async (err, decoded) => {
+        if (err) {
+            return res.status(401).send({
+                message: "UnAuthorised ! Admin role is required! ",
+            });
         }
-        const user = await getAdmin(decodedToken.id);
+        const user = await admin.findOne({ email: decoded.id });
         if (!user) {
-            throw Errors.AuthError('invalid auth token provided');
+            return res.status(400).send({ message: "The admin that this  token belongs to does not exist", });
         }
-        // console.log(`user name ${user.name}`)
         req.user = user;
-        next();
-    } catch (error) {
-        handleAuthErrors(next, error);
-    }
-}
 
-exports.sellerSignin = async (req, res, next) => {
-    try {
-        console.log('seller auth')
-        const decodedToken = await getDecodedToken(req.get('Authorization'));
-        // console.log("getDecodedToken",decodedToken.scope)
-        if (decodedToken.scope !== 'login') {
-            throw Errors.AuthError('invalid auth token provided');
+        next();
+    });
+};
+const sellerSignin = (req, res, next) => {
+    const token =
+        req.headers["x-access-token"] ||
+        req.get("Authorization")?.split("Bearer ")[1];
+
+    if (!token) {
+        return res.status(403).send({
+            message: "no token provided! Access prohibited",
+        });
+    }
+
+    jwt.verify(token, process.env.SECRETK, async (err, decoded) => {
+        if (err) {
+            return res.status(401).send({
+                message: "UnAuthorised ! Admin role is required! ",
+            });
         }
-        const user = await getSeller(decodedToken.id);
+        console.log(decoded);
+        const user = await seller.findOne({ email: decoded.id.email, userType: "seller" });
+
         if (!user) {
-            throw Errors.AuthError('invalid auth token provided');
+            return res.status(400).send({
+                message: "The admin that this  token belongs to does not exist",
+            });
         }
-        // console.log(`user name ${user.name}`)
         req.user = user;
+
         next();
-    } catch (error) {
-        handleAuthErrors(next, error);
-    }
-}
-
-const handleAuthErrors = (next, error) => {
-    try {
-        // console.log(error);
-        if (error instanceof AuthError || error instanceof jwt.TokenExpiredError || error instanceof jwt.JsonWebTokenError) {
-            error.status = 401;
-        }
-        next(error);
-    } catch (error) {
-        // console.log(error);
-        next(error);
-    }
-}
-
-const getDecodedToken = async (authHeader) => {
-    try {
-        // console.log('entered get decoded token utility....');
-        // console.log('authHeader',authHeader)
-        if (!authHeader) {
-            throw Errors.AuthError('token not provided or user not logged in')
-        }
-        const authHeaderStringSplit = authHeader.split(' ');
-        if (!authHeaderStringSplit[0] || authHeaderStringSplit[0].toLowerCase() !== 'bearer' || !authHeaderStringSplit[1]) {
-            throw  Errors.AuthError('token not provided or user not logged in');
-        }
-
-        const token = authHeaderStringSplit[1];
-        const decodedToken = tokenHelper.getDecodedToken(token);
-        // console.log("deodetoken",decodedToken)
-        return decodedToken;
-    } catch (error) {
-        throw error;
-    }
-}
-
-const getUser = async (userId) => {
-    try {
-        const user = await User.findById(userId).lean();
-        return user;
-    } catch (error) {
-        throw error;
-    }
-}
-
-const getAdmin = async (adminId) => {
-    try {
-        const Admin = await admin.findById(adminId).lean();
-        if (Admin) {
-            Admin.Admin = true;
-        }
-        return Admin;
-    } catch (error) {
-        throw error;
-    }
-}
-
-const getSeller = async (sellerId) => {
-    try {
-        const Seller = await seller.findById(sellerId).lean();
-        if (Seller) {
-            Seller.Seller = true;
-        }
-        return Seller;
-    } catch (error) {
-        throw error;
-    }
-}
+    });
+};
+module.exports = {
+    requireSignin,
+    adminMiddleware,
+    sellerSignin
+};

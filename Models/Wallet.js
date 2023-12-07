@@ -1,17 +1,8 @@
 const mongoose = require('mongoose');
-
 const WalletSchema = mongoose.Schema({
     user: {
-        type: Schema.Types.ObjectId,
-        refPath: "user_type"
-    },
-    installer: {
-        type: Schema.Types.ObjectId, 
-        ref:"insteller"
-    },
-    user_type: {
-        type: String,
-        enum: ["user", "seller", "installer"]
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"
     },
     balance: {
         type: Number,
@@ -21,4 +12,4 @@ const WalletSchema = mongoose.Schema({
     timestamps: true
 })
 
-module.exports =mongoose.model('wallet', WalletSchema)
+module.exports = mongoose.model('wallet', WalletSchema)

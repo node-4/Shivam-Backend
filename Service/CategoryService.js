@@ -32,6 +32,19 @@ exports.getCategory = async () => {
 		throw error
 	}
 }
+exports.getCategorybyType = async (categoryType) => {
+	try {
+		result = await category.find({ categoryType: categoryType });
+		if (result) {
+			return { success: true, status: 200, data: result, message: "Get Succefully" }
+		} else {
+			return { success: false, status: 400, message: "Something went Wrong" }
+		}
+	} catch (error) {
+		console.log(error);
+		throw error
+	}
+}
 exports.updateCategory = async (categoryId, payload) => {
 	try {
 		let result = await category.findOneAndUpdate({ _id: categoryId }, { $set: payload }, { new: true })

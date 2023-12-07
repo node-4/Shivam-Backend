@@ -8,7 +8,6 @@ const OtpSchema = mongoose.Schema({
     },
     created: {
         type: Date,
-        // default: moment().utc()
         default: function () {
             return moment().utc();
         }
@@ -26,16 +25,12 @@ const OtpSchema = mongoose.Schema({
 const userSchema = mongoose.Schema({
     name: {
         type: String,
-
     },
     email: {
         type: String,
-
-
     },
     password: {
         type: String,
-
     },
     location: {
         type: String
@@ -45,7 +40,19 @@ const userSchema = mongoose.Schema({
     },
     phone_number: {
         type: Number,
-        required: true
+    },
+    mobile: {
+        type: String,
+        validate: {
+            validator: function (v) {
+                return /^[+]?[0-9]{10,13}$/.test(v);
+            },
+            message: props => `${props.value} is not a valid phone number!`
+        }
+    },
+    orderAcceptance: {
+        type: Boolean,
+        default: false
     },
     country_code: {
         type: String,
@@ -62,32 +69,62 @@ const userSchema = mongoose.Schema({
         type: OtpSchema,
         select: false,
     },
+    otpSecret: {
+        type: String,
+        require: true
+    },
     profile: {
-
-        filename: {
+        type: String,
+        required: null
+    },
+    start: {
+        Shours: {
             type: String,
-            default: null
         },
-        filesize: {
-            type: String,
-            default: null
+        Smin: {
+            type: String
         },
-        filetype: {
-            type: String,
-            default: null
+        SSec: {
+            type: String
+        }
+    },
+    endtime: {
+        Ehours: {
+            type: String
         },
-        url: {
-            type: String,
-            required: null
+        Emin: {
+            type: String
         },
-
+        Esec: {
+            type: String
+        }
+    },
+    servies: [],
+    location: {
+        address: {
+            type: String
+        },
+        long: {
+            type: Number,
+            default: 0,
+        },
+        late: {
+            type: Number,
+            default: 0
+        },
+        Radius: {
+            type: Number,
+            default: 0
+        }
+    },
+    image: {
+        type: String,
+        default: "https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014__340.jpg"
+    },
+    userType: {
+        type: String,
+        enum: ['user', 'admin', 'seller', 'insteller']
     }
+}, { timestamps: true, toJSON: { versionKey: false }, toObject: { versionKey: false }, })
 
-},
-    {
-        timestamps: true,
-        toJSON: { versionKey: false },
-        toObject: { versionKey: false },
-    })
-
-module.exports =mongoose.model('user', userSchema)
+module.exports = mongoose.model('user', userSchema)

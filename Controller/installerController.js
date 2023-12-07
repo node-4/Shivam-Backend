@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { wallet, User, transactionModel } = require("../Models");
-const installer = require("../Models/installer_auth");
+const wallet = require("../Models/Wallet");
+const transactionModel = require("../Models/transactionModel");
+const installer = require("../Models/User");
 const instellerSkill = require("../Models/instellerSkill");
 const skill = require("../Models/skill");
 const subSkill = require("../Models/subSkill");
@@ -10,20 +11,15 @@ const { AddOnResultInstance, AddOnResultPage, } = require("twilio/lib/rest/api/v
 exports.sendOTP = async (req, res) => {
   try {
     const { mobileNumber } = req.body;
-    const Installer = await installer.findOne({ mobile: mobileNumber });
+    const Installer = await installer.findOne({ mobile: mobileNumber, userType: "insteller" });
     if (Installer) {
-      return res.status(201).json({
-        message: "Mobile Number is already register.",
-      });
+      return res.status(201).json({ message: "Mobile Number is already register.", });
     }
     const otpSecret = Math.floor(100000 + Math.random() * 900000);
     console.log(otpSecret);
-    const data = {
-      mobile: mobileNumber,
-      otpSecret: otpSecret,
-    };
+    const data = { mobile: mobileNumber, otpSecret: otpSecret, userType: "insteller" };
     const result = await installer.create(data);
-    await wallet.create({ installer: result._id, user_type: "installer", });
+    await wallet.create({ user: result._id });
     return res.status(200).json({ message: "OTP sent successfully", otp: result.otpSecret });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -32,7 +28,7 @@ exports.sendOTP = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await installer.findOne({ email });
+    const user = await installer.findOne({ email, userType: "insteller" });
 
     if (!user) {
       return res.status(400).json({ message: "Installer Email not register " });
@@ -111,7 +107,7 @@ exports.UpdateProfile = async (req, res) => {
       result: result,
     });
   } catch (err) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: err.message });
   }
 };
 exports.DeleteInsteller = async (req, res) => {
@@ -298,7 +294,7 @@ exports.getsubSkillForuser = async (req, res) => {
 };
 exports.getWallet = async (req, res) => {
   try {
-    let findSkill1 = await wallet.findOne({ installer: req.params.installerId, user_type: "installer", });
+    let findSkill1 = await wallet.findOne({ user: req.params.installerId, });
     if (!findSkill1) {
       return res.status(404).send({ status: 404, msg: "Wallet not found successfully.", data: 0 });
     } else {
@@ -324,7 +320,7 @@ exports.allTransactionUser = async (req, res) => {
 };
 exports.removeMoney = async (req, res) => {
   try {
-    let findSkill1 = await wallet.findOne({ installer: req.params.installerId, user_type: "installer", });
+    let findSkill1 = await wallet.findOne({ user: req.params.installerId, });
     if (!findSkill1) {
       return res.status(404).send({ status: 404, msg: "Wallet not found successfully.", data: 0 });
     } else {
@@ -356,7 +352,7 @@ exports.removeMoney = async (req, res) => {
 };
 exports.addCommission = async (req, res) => {
   try {
-    let findSkill1 = await wallet.findOne({ installer: req.params.installerId, user_type: "installer", });
+    let findSkill1 = await wallet.findOne({ user: req.params.installerId });
     if (!findSkill1) {
       return res.status(404).send({ status: 404, msg: "Wallet not found successfully.", data: 0 });
     } else {

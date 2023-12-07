@@ -30,12 +30,8 @@ const sellerSchema = new Schema({
 		url: {
 			type: String,
 			default: null
-
 		}
 	}
-},
-	{
-		timestamps: true
-	})
+}, { timestamps: true })
 
 module.exports = model('seller', sellerSchema)

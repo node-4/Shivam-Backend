@@ -29,7 +29,6 @@ exports.addBanner = async (req, res) => {
 		})
 	}
 }
-
 exports.getBanner = async (req, res,) => {
 	try {
 		let result = await BannerService.getBanner({})
@@ -55,7 +54,6 @@ exports.getBanner = async (req, res,) => {
 		})
 	}
 }
-
 exports.updateBanner = async (req, res) => {
 	try {
 		let payload = req.body;
@@ -80,7 +78,6 @@ exports.updateBanner = async (req, res) => {
 		throw error
 	}
 }
-
 exports.deleteBanner = async (req, res, next) => {
 	try {
 		let bannerId = req.params.bannerid

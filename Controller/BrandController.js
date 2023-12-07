@@ -1,17 +1,9 @@
-const { BrandService } = require('../Service');
-
+const BrandService = require('../Service/BrandService');
 exports.addBrand = async (req, res) => {
 	try {
 		const payload = req.body
-		console.log(payload)
 		if (req.file) {
-			let brandImg = {
-				filename: req.file.filename,
-				filetype: req.file.mimetype,
-				filesize: req.file.size,
-				url: req.file.path
-			}
-			payload.brandImg = brandImg
+			payload.brandImg = req.file.path
 		}
 		const result = await BrandService.addBrand(payload)
 		if (result.status) {
@@ -32,7 +24,6 @@ exports.getBrand = async (req, res,) => {
 		} else {
 			return res.status(result.status).json({ message: result.message, success: result.success, status: result.status, })
 		}
-
 	} catch (error) {
 		console.log(error);
 		return res.status(500).json({ message: error.message })
@@ -43,10 +34,7 @@ exports.updateBrand = async (req, res) => {
 		let payload = req.body;
 		console.log(req.body)
 		if (req.file) {
-			let brandImg = {
-				filename: req.file.filename, filetype: req.file.mimetype, filesize: req.file.size, url: req.file.path
-			}
-			payload.brandImg = brandImg
+			payload.brandImg = req.file.path
 		}
 		let brandId = req.params.brandid
 		let result = await BrandService.updateBrand(brandId, payload)

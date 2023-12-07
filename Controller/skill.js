@@ -1,4 +1,4 @@
-const { skillService } = require('../Service')
+const skillService = require('../Service/skillService')
 
 exports.addSkills = async (req, res) => {
 	if (req.file) {

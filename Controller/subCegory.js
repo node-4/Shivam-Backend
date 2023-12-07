@@ -10,9 +10,9 @@ exports.AddSubCategory = async (req, res) => {
                         const data = { title: req.body.title, catgory: req.body.catgoryId, }
                         const result1 = await subCategory.create(data);
                         if (result1) {
-                                return { success: true, data: result1, status: 200, message: "Successfully Found Data !!" }
+                                return res.status(200).json({ success: true, data: result1, status: 200, message: "Successfully Found Data !!" })
                         } else {
-                                return { success: false, status: 404, error: 'Record Not Found!!!' }
+                                return res.status(404).json({ success: false, status: 404, error: 'Record Not Found!!!' })
                         }
                 }
         } catch (err) {
@@ -24,16 +24,16 @@ exports.getAll = async (req, res) => {
                 if (req.query.catgory != (null || undefined)) {
                         const result = await subCategory.find({ catgory: req.query.catgory }).populate('catgory');
                         if (result) {
-                                return { success: true, data: result, status: 200, message: "Successfully Found Data !!" }
+                                return res.status(200).json({ success: true, data: result, status: 200, message: "Successfully Found Data !!" })
                         } else {
-                                return { success: false, status: 404, error: 'Record Not Found!!!' }
+                                return res.status(200).json({ success: false, status: 404, error: 'Record Not Found!!!' })
                         }
                 } else {
                         const result = await subCategory.find().populate('catgory');
                         if (result) {
-                                return { success: true, data: result, status: 200, message: "Successfully Found Data !!" }
+                                return res.status(200).json({ success: true, data: result, status: 200, message: "Successfully Found Data !!" })
                         } else {
-                                return { success: false, status: 404, error: 'Record Not Found!!!' }
+                                return res.status(200).json({ success: false, status: 404, error: 'Record Not Found!!!' })
                         }
                 }
         } catch (err) {
@@ -47,9 +47,9 @@ exports.DeleteSubCategory = async (req, res) => {
         try {
                 let result = await subCategory.findByIdAndDelete({ _id: req.params.id });
                 if (result) {
-                        return res.status(200).json({ success: true, data: result, status: 200, message: "Deleted" });
+                        return res.status(200).json({ success: true, data: result, status: 200, message: "Delete Successfully Found Data !!" })
                 } else {
-                        return res.status(404).json({ success: false, status: 404, error: 'Record Not Delete!!!' });
+                        return res.status(200).json({ success: false, status: 404, error: 'Record Not Found!!!' })
                 }
         } catch (err) {
                 console.error(err);
@@ -58,15 +58,14 @@ exports.DeleteSubCategory = async (req, res) => {
 }
 exports.getById = async (req, res) => {
         try {
-                const result = await subCategory.findById({ _id: req.params.Id }).populate('catgory')
+                const result = await subCategory.findById({ _id: req.params.Id }).populate('catgory');
                 if (result) {
-                        return res.status(200).json({ success: true, data: result, status: 200, message: "SubCagegory found " })
+                        return res.status(200).json({ success: true, data: result, status: 200, message: "SubCagegory Successfully Found Data !!" })
+                } else {
+                        return res.status(200).json({ success: false, status: 404, error: 'SubCagegory Not Found!!!' })
                 }
-                return res.status(404).json({ success: false, data: {}, status: 404, message: "SubCagegory not Found !!" });
         } catch (err) {
                 console.error(error);
-                return res.status(400).json({
-                        message: err.message
-                })
+                return res.status(400).json({ message: err.message })
         }
 }

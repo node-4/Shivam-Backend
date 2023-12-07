@@ -32,6 +32,22 @@ exports.getCategory = async (req, res,) => {
 		})
 	}
 }
+exports.getCategorybyType = async (req, res,) => {
+	try {
+		let categoryType = req.params.categoryType
+		let result = await CategoryService.getCategorybyType(categoryType)
+		if (result.success) {
+			return res.status(result.status).json({ message: result.message, success: result.success, status: result.status, data: result.data })
+		} else {
+			return res.status(result.status).json({ success: result.success, status: result.status, message: result.message })
+		}
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({
+			message: error.message
+		})
+	}
+}
 exports.updateCategory = async (req, res) => {
 	try {
 		let payload = req.body;

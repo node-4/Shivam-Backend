@@ -1,13 +1,20 @@
 const mongoose = require('mongoose');
-const servicesSchema =  mongoose.Schema({
+const servicesSchema = mongoose.Schema({
+	Wishlistuser: {
+		type: [mongoose.Schema.ObjectId],
+		ref: "user"
+	},
 	category: {
-		type: Schema.Types.ObjectId,
+		type: mongoose.Schema.ObjectId,
 		ref: "category"
 	},
 	subCategory: {
-		type: Schema.Types.ObjectId,
-		required: true,
+		type: mongoose.Schema.ObjectId,
 		ref: "subCatgory"
+	},
+	sellerId: {
+		type: mongoose.Schema.ObjectId,
+		ref: "user"
 	},
 	serviceName: {
 		type: String,
@@ -33,7 +40,10 @@ const servicesSchema =  mongoose.Schema({
 		type: Array
 	},
 	price: {
-		type: String,
+		type: Number,
+	},
+	payPrice: {
+		type: Number,
 	},
 	discount: {
 		type: String,
@@ -42,6 +52,20 @@ const servicesSchema =  mongoose.Schema({
 	discountActive: {
 		type: String,
 		default: false
+	},
+	freePickAndDrop: {
+		type: String,
+		default: false
+	},
+	spares: {
+		type: String,
+		default: false
+	},
+	time: {
+		type: String,
+	},
+	pickupCharge: {
+		type: String,
 	},
 	faq: [{
 		question: {
@@ -61,7 +85,7 @@ const servicesSchema =  mongoose.Schema({
 	},
 	reviews: [{
 		user: {
-			type: Schema.Types.ObjectId,
+			type: mongoose.Schema.ObjectId,
 			ref: "User",
 			required: true,
 		},
@@ -78,5 +102,13 @@ const servicesSchema =  mongoose.Schema({
 			required: true,
 		},
 	}],
+	categoryType: {
+		type: String,
+		enum: ["Other", "EmergencyService"]
+	},
+	sale: {
+		type: Number,
+		default: 0,
+	},
 }, { timestamps: true })
 module.exports = mongoose.model("Services", servicesSchema)

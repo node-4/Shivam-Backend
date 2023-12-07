@@ -1,4 +1,4 @@
-const admin = require('../Models/Admin');
+const admin = require('../Models/User');
 const passwordHelper = require('../Helpers/Password');
 const bcrypt = require('bcryptjs');
 const tokenHelper = require('../Helpers/Token');
@@ -8,8 +8,9 @@ exports.adminSignup = async (payload) => {
 	try {
 		payload.password = await passwordHelper.hashPassword(payload.password, 10);
 		console.log(payload.password)
-		let user = await admin.findOne({ email: payload.email });
+		let user = await admin.findOne({ email: payload.email, userType: "admin" });
 		if (!user) {
+			payload.userType = "admin";
 			const result = await new admin(payload)
 			result.save()
 			if (result) {
@@ -30,7 +31,7 @@ exports.adminSignup = async (payload) => {
 exports.adminSignin = async (payload) => {
 	try {
 		console.log(payload.email)
-		const result = await admin.findOne({ email: payload.email });
+		const result = await admin.findOne({ email: payload.email, userType: "admin" });
 		console.log(result)
 		if (result) {
 			const isValid = await passwordHelper.isValidPassword(payload.password, result.password);
@@ -67,7 +68,7 @@ exports.adminSignin = async (payload) => {
 }
 exports.sendMail = async (payload) => {
 	try {
-		const result = await admin.findOne({ email: payload.email })
+		const result = await admin.findOne({ email: payload.email, userType: "admin" })
 		if (result) {
 			const code = Math.floor(100000 + Math.random() * 900000);
 			let otpData = await otp.findOne({ email: payload.email });
@@ -116,7 +117,7 @@ exports.changePassword = async (payload) => {
 				}
 
 			} else {
-				let _user = await admin.findOne({ email: result.email });
+				let _user = await admin.findOne({ email: result.email, userType: "admin" });
 				console.log(_user)
 				if (_user) {
 

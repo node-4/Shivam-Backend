@@ -1,23 +1,37 @@
 const services = require('../Models/Services')
-
+const category = require('../Models/Category');
 exports.addService = async (payload) => {
 	try {
-		const result = await new services(payload)
-		result.save()
-		if (result) {
-			return { success: true, status: 200, data: result, message: "Add Service Seccessfully" }
+		let result1 = await category.findOne({ _id: payload.category })
+		if (!result1) {
+			return { success: false, status: 404, error: 'Record Not Found!!!' }
 		} else {
-			return { success: false, status: 400, message: "Something Went Wrong" }
+			if (result1.categoryType == "EmergencyService") {
+				let result2 = await services.findOne({ category: payload.category })
+				if (result2) {
+					return { success: true, status: 200, data: result2, message: "Add Service Seccessfully" }
+				} else {
+					payload.categoryType = "EmergencyService"
+				}
+			} else {
+				payload.categoryType = "Other"
+			}
+			const result = await new services(payload)
+			result.save()
+			if (result) {
+				return { success: true, status: 200, data: result, message: "Add Service Seccessfully" }
+			} else {
+				return { success: false, status: 400, message: "Something Went Wrong" }
+			}
 		}
 	} catch (error) {
 		console.log(error)
 		throw error
 	}
 }
-
 exports.getService = async () => {
 	try {
-		const result = await services.find({}).populate(['serviceTypeId', 'category', 'subCategory'])
+		const result = await services.find({}).populate(['category', 'subCategory'])
 		if (result) {
 			return {
 				success: true,
@@ -38,7 +52,6 @@ exports.getService = async () => {
 		throw error
 	}
 }
-
 exports.getServiceByServiceTypeId = async (serviceTypeId) => {
 	try {
 		const result = await services.find({ serviceTypeId: serviceTypeId })
@@ -62,7 +75,6 @@ exports.getServiceByServiceTypeId = async (serviceTypeId) => {
 		throw error
 	}
 }
-
 exports.updateServices = async (ServiceId, payload) => {
 	try {
 		let result = await services.findOneAndUpdate({ _id: ServiceId }, payload)
@@ -86,7 +98,6 @@ exports.updateServices = async (ServiceId, payload) => {
 		throw error
 	}
 }
-
 exports.deleteService = async (ServiceId) => {
 	let result = await services.findOneAndDelete({ _id: ServiceId })
 	if (result) {
@@ -105,7 +116,6 @@ exports.deleteService = async (ServiceId) => {
 		}
 	}
 }
-
 exports.getServicesSellerId = async (sellerId) => {
 	let result = await services.find({ sellerId: sellerId }).populate(['category', 'subCategory', 'sellerId']);
 	console.log(result)

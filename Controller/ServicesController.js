@@ -200,3 +200,16 @@ exports.myWishlist = async (req, res, next) => {
 		return res.status(501).send({ status: 501, message: "server error.", data: {}, });
 	}
 };
+exports.getPopularService = async (req, res) => {
+	try {
+		const result = await Services.find({ categoryType: "Other" }).sort({ sale: -1 }).limit(10);
+		if (result) {
+			return res.status(200).json({ status: 200, message: "Popular Services found Successfully", });
+		} else {
+			return res.status(404).json({ status: 404, message: "Popular Services not found.", });
+		}
+	} catch (error) {
+		console.log(error)
+		return res.status(500).json({ message: error.message })
+	}
+}

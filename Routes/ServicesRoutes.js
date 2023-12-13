@@ -18,6 +18,6 @@ router.get('/seller/:sellerId', ServicesController.getSellelerSellerId)
 router.post("/user/createWishlist/:id", Auth.requireSignin, ServicesController.createWishlist);
 router.post("/user/removeFromWishlist/:id", Auth.requireSignin, ServicesController.removeFromWishlist);
 router.get("/user/myWishlist", Auth.requireSignin, ServicesController.myWishlist);
-router.get("/user/getPopularService", Auth.requireSignin, ServicesController.getPopularService);
+router.get("/user/getPopularService", ServicesController.getPopularService);
 
 module.exports = router

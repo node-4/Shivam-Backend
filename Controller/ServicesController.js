@@ -202,9 +202,9 @@ exports.myWishlist = async (req, res, next) => {
 };
 exports.getPopularService = async (req, res) => {
 	try {
-		const result = await Services.find({ categoryType: "Other" }).sort({ sale: -1 }).limit(10);
+		const result = await Services.find({ categoryType: "Other" }).sort({ sale: -1 }).limit(5);
 		if (result) {
-			return res.status(200).json({ status: 200, message: "Popular Services found Successfully", });
+			return res.status(200).json({ status: 200, message: "Popular Services found Successfully", data: result, });
 		} else {
 			return res.status(404).json({ status: 404, message: "Popular Services not found.", });
 		}

@@ -29,10 +29,25 @@ exports.getService = async (req, res) => {
 		return res.status(500).json({ message: error.message })
 	}
 }
-exports.getServiceByServiceTypeId = async (req, res) => {
+exports.getServiceBycategorySubCategoryId = async (req, res) => {
 	try {
-		const serviceTypeId = req.params.ServiceTypeid
-		const result = await ServicesService.getServiceByServiceTypeId(serviceTypeId)
+		const categoryId = req.params.category;
+		const subCategoryId = req.params.subCategoryId;
+		const result = await ServicesService.getServiceBycategorySubCategoryId(categoryId, subCategoryId)
+		if (result.success) {
+			return res.status(result.status).json({ message: result.message, status: result.status, success: result.success, data: result.data, })
+		} else {
+			return res.status(res.status).json({ message: result.message, status: result.status, success: result.success })
+		}
+	} catch (error) {
+		console.log(error)
+		return res.status(500).json({ message: error.message })
+	}
+}
+exports.getServiceById = async (req, res) => {
+	try {
+		const subCategoryId = req.params.Id;
+		const result = await ServicesService.getServiceById(subCategoryId)
 		if (result.success) {
 			return res.status(result.status).json({ message: result.message, status: result.status, success: result.success, data: result.data, })
 		} else {

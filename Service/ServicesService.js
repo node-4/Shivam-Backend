@@ -52,9 +52,25 @@ exports.getService = async () => {
 		throw error
 	}
 }
-exports.getServiceByServiceTypeId = async (serviceTypeId) => {
+exports.getServiceById = async (id) => {
 	try {
-		const result = await services.find({ serviceTypeId: serviceTypeId })
+		const result = await services.findOne({ _id: id })
+		if (result) {
+			return { success: true, status: 200, data: result, message: "Successfully get" }
+		} else {
+			return {
+				success: false, status: 400, message: "Something Went Wrong"
+			}
+		}
+
+	} catch (error) {
+		console.log(error)
+		throw error
+	}
+}
+exports.getServiceBycategorySubCategoryId = async (category, subCategory) => {
+	try {
+		const result = await services.find({ subCategory: subCategory, category: category })
 		if (result) {
 			return {
 				success: true,

@@ -54,13 +54,11 @@ exports.getService = async () => {
 }
 exports.getServiceById = async (id) => {
 	try {
-		const result = await services.findOne({ _id: id })
+		const result = await services.findById({ _id: id })
 		if (result) {
 			return { success: true, status: 200, data: result, message: "Successfully get" }
 		} else {
-			return {
-				success: false, status: 400, message: "Something Went Wrong"
-			}
+			return { success: false, status: 400, message: "Something Went Wrong" }
 		}
 
 	} catch (error) {

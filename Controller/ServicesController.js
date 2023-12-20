@@ -48,6 +48,7 @@ exports.getServiceById = async (req, res) => {
 	try {
 		const subCategoryId = req.params.Id;
 		const result = await ServicesService.getServiceById(subCategoryId)
+		console.log(result);
 		if (result.success) {
 			return res.status(result.status).json({ message: result.message, status: result.status, success: result.success, data: result.data, })
 		} else {

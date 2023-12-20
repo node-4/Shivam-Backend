@@ -12,7 +12,7 @@ router.post('/', Auth.sellerSignin, ServicesController.addService);
 router.post('/uploadImage', upload.single('image'), ServicesController.uploadImage);
 router.get('/', ServicesController.getService);
 router.get('/:category/:subCategory', ServicesController.getServiceBycategorySubCategoryId);
-router.get('/:id', ServicesController.getServiceById);
+router.get('/:Id', ServicesController.getServiceById);
 router.put('/:serviceid', upload.single('image'), ServicesController.updateService);
 router.delete('/:serviceid', ServicesController.deleteService);
 router.get('/seller/:sellerId', ServicesController.getSellelerSellerId)

@@ -33,7 +33,7 @@ exports.addToCart = async (req, res, next) => {
 exports.getCart = async (req, res, next) => {
   try {
     const cart = await Cart.findOne({ user: req.user._id });
-    console.log(req.user._id)
+    console.log(cart)
     if (!cart) {
       return res.status(200).json({ success: false, msg: "cart", cart: {} })
     } else {
@@ -60,6 +60,7 @@ const getCartResponse = async (cart) => {
     const cartResponse = cart.toObject();
     let discount = 0;
     let total = 0;
+    console.log(cartResponse);
     cartResponse.products.forEach((cartProduct) => {
       cartProduct.total = cartProduct.product.price * cartProduct.quantity;
       total += cartProduct.total;

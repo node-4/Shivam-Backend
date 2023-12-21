@@ -152,7 +152,7 @@ exports.sendOtp = async (req, res) => {
 		if (result.success) {
 			return res.status(result.status).json({
 				success: result.success, message: result.message,
-				// data:result.data,
+				userId: result.data._id,
 				otp: result.otp
 			})
 		}

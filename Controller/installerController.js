@@ -7,6 +7,7 @@ const instellerSkill = require("../Models/instellerSkill");
 const skill = require("../Models/skill");
 const subSkill = require("../Models/subSkill");
 const { AddOnResultInstance, AddOnResultPage, } = require("twilio/lib/rest/api/v2010/account/recording/addOnResult");
+const { generateOTP, verifyOTP } = require('../Helpers/Otp.js');
 
 exports.sendOTP = async (req, res) => {
   try {
@@ -15,7 +16,7 @@ exports.sendOTP = async (req, res) => {
     if (Installer) {
       return res.status(201).json({ message: "Mobile Number is already register.", });
     }
-    const otpSecret = Math.floor(100000 + Math.random() * 900000);
+    const otpSecret = await generateOTP(4);
     console.log(otpSecret);
     const data = { mobile: mobileNumber, otpSecret: otpSecret, userType: "insteller" };
     const result = await installer.create(data);

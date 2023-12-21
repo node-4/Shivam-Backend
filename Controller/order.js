@@ -248,7 +248,7 @@ exports.getUpcommingBooking = async (req, res) => {
 };
 exports.getBooking = async (req, res) => {
   try {
-    const orders = await Order.find({ instellerId: req.params.instellerId, orderStatus: "Complete" }).populate('user services.services').sort({ createdAt: -1 }).exec();
+    const orders = await Order.find({ instellerId: req.params.instellerId, /*orderStatus: "Complete" */ }).populate('user services.services').sort({ createdAt: -1 }).exec();
     return res.status(200).send({ status: true, message: "Success", data: orders });
   } catch (err) {
     console.log(err.message);

@@ -304,6 +304,15 @@ exports.giveRating = async (req, res) => {
     return res.status(500).send({ msg: "internal server error ", error: err.message });
   }
 };
+exports.ratingListForUser = async (req, res) => {
+  try {
+    const orders = await installerReview.find({ userId: req.params.instellerId }).populate('userId instellerId OrderId').sort({ createdAt: -1 }).exec();
+    return res.status(200).send({ status: true, message: "Success", data: orders });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).send({ msg: "internal server error ", error: err.message });
+  }
+};
 exports.ratingList = async (req, res) => {
   try {
     const orders = await installerReview.find({ instellerId: req.params.instellerId }).populate('userId instellerId OrderId').sort({ createdAt: -1 }).exec();

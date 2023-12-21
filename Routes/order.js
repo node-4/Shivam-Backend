@@ -19,5 +19,6 @@ router.put('/rejectInvitation/:instellerId', order.rejectInvitation);
 router.post('/rating/:orderId', order.giveRating);
 router.get('/rating/:instellerId', order.ratingList);
 router.post('/createEmergenceOrder', Auth.requireSignin, order.createEmergenceOrder);
+router.get('/ratingListForUser/:instellerId', order.ratingListForUser);
 
 module.exports = router;
